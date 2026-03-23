@@ -9,7 +9,7 @@
 body{font-family:system-ui,-apple-system,sans-serif;background:#f5f4f0;color:#1a1a18;padding:2rem 1rem}
 .wrap{max-width:720px;margin:0 auto}
 h1{font-size:18px;font-weight:500;margin-bottom:1.5rem;color:#1a1a18}
-.section{margin-bottom:1.25rem;background:#ffffff;border:0.5px solid #d3d1c7;border-radius:12px;padding:1rem 1.25rem}
+.section{margin-bottom:1.25rem;background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;padding:1rem 1.25rem}
 .sec-title{font-size:12px;font-weight:500;color:#888780;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem}
 .field{margin-bottom:.75rem}
 .field:last-child{margin-bottom:0}
@@ -22,112 +22,173 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
 .chip.active{background:#e6f1fb;color:#185fa5;border-color:#378add}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .output-box{background:#f5f4f0;border:0.5px solid #d3d1c7;border-radius:8px;padding:1rem;font-size:13px;line-height:1.8;color:#1a1a18;white-space:pre-wrap;min-height:120px;font-family:ui-monospace,monospace}
-.btn-row{display:flex;gap:8px;margin-top:1rem}
+.output-box.en{color:#185fa5}
+.btn-row{display:flex;gap:8px;margin-top:1rem;flex-wrap:wrap}
 button{font-size:13px;padding:7px 16px;border-radius:8px;border:0.5px solid #b4b2a9;background:transparent;color:#1a1a18;cursor:pointer;transition:all .15s;font-family:inherit}
 button:hover{background:#f5f4f0}
 button:active{transform:scale(.98)}
 .btn-copy{font-weight:500}
 .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:6px;background:#faeeda;color:#854f0b}
-@media(max-width:500px){.row2{grid-template-columns:1fr}}
+.char-count{font-size:11px;color:#888780;text-align:right;margin-top:3px}
+.char-count.over{color:#a32d2d}
+.output-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.output-meta span{font-size:12px;color:#888780}
+.ratio-custom{margin-top:6px;display:none}
+.ratio-custom.show{display:block}
+.en-label{font-size:12px;color:#185fa5;font-weight:500;margin-top:12px;margin-bottom:4px}
+.char1-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.char1-grid .field-full{grid-column:1/-1}
+@media(max-width:600px){
+  .row2,.char1-grid{grid-template-columns:1fr;gap:.75rem}
+  .char1-grid .field-full{grid-column:unset}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
 <h1>Gemini Prompt Builder</h1>
 
+<!-- 第一層 -->
 <div class="section">
   <div class="sec-title">第一層　角色錨定</div>
-  <div class="row2">
+  <div class="char1-grid">
     <div class="field">
       <label>角色一　姓名</label>
-      <input type="text" id="c1name" placeholder="南雁" value="南雁">
+      <input type="text" id="c1name" placeholder="例：南雁">
+    </div>
+    <div class="field">
+      <label>角色一　性別</label>
+      <input type="text" id="c1gender" placeholder="例：女">
+    </div>
+    <div class="field">
+      <label>角色一　身高</label>
+      <input type="text" id="c1height" placeholder="例：165cm">
     </div>
     <div class="field">
       <label>角色一　外貌特徵</label>
-      <input type="text" id="c1desc" placeholder="黑色長髮、灰色眼睛、低髮髻" value="黑色長髮、灰色眼睛、低髮髻">
+      <input type="text" id="c1desc" placeholder="例：黑色長髮、灰色眼睛、低髮髻">
     </div>
   </div>
-  <div class="row2">
+  <div class="char1-grid" style="margin-top:.75rem">
     <div class="field">
       <label>角色二　姓名</label>
-      <input type="text" id="c2name" placeholder="辛癸" value="辛癸">
+      <input type="text" id="c2name" placeholder="例：辛癸">
+    </div>
+    <div class="field">
+      <label>角色二　性別</label>
+      <input type="text" id="c2gender" placeholder="例：男">
+    </div>
+    <div class="field">
+      <label>角色二　身高</label>
+      <input type="text" id="c2height" placeholder="例：182cm">
     </div>
     <div class="field">
       <label>角色二　外貌特徵</label>
-      <input type="text" id="c2desc" placeholder="黑棕色長髮、辮子、琥珀色眼睛、暖棕色皮膚" value="黑棕色長髮、辮子、琥珀色眼睛、暖棕色皮膚">
+      <input type="text" id="c2desc" placeholder="例：黑棕色長髮、辮子、琥珀色眼睛、暖棕色皮膚">
     </div>
   </div>
 </div>
 
+<!-- 第二層 -->
 <div class="section">
   <div class="sec-title">第二層　畫面風格</div>
   <div class="field">
     <label>畫風技法</label>
     <div class="chip-group" id="chips-style">
-      <span class="chip active" data-val="半寫實動漫風格，參照附圖畫風">半寫實動漫</span>
+      <span class="chip" data-val="半寫實動漫風格，參照附圖畫風">半寫實動漫</span>
       <span class="chip" data-val="水墨畫風格，線條寫意，墨色暈染">水墨</span>
       <span class="chip" data-val="厚塗油畫風格，筆觸明顯，質感豐富">厚塗油畫</span>
       <span class="chip" data-val="淡彩水彩風格，透明感，邊緣柔和">淡彩水彩</span>
       <span class="chip" data-val="電影截圖質感，寫實攝影感">電影截圖感</span>
+      <span class="chip" data-val="Q版卡通風格，頭大身小，圓潤可愛">Q版</span>
+      <span class="chip" data-val="潦草插圖風格，手繪線條，隨興感">潦草插圖</span>
+      <span class="chip" data-val="精緻插圖風格，細膩線條，高完成度">精緻插圖</span>
+      <span class="chip" data-val="塗鴉風格，粗獷筆觸，即興感強">塗鴉</span>
     </div>
   </div>
   <div class="field">
     <label>光線性質</label>
     <div class="chip-group" id="chips-light">
+      <span class="chip" data-val="無光線設定，平塗無陰影">無</span>
       <span class="chip" data-val="正午烈日直射，強光高反差">正午烈日</span>
+      <span class="chip" data-val="清晨柔和光，薄霧感，冷暖交界">清晨</span>
       <span class="chip" data-val="黃昏側光，橙金暖調，長影">黃昏側光</span>
-      <span class="chip active" data-val="燭光昏黃，跳動光源，陰影濃重">燭光</span>
+      <span class="chip" data-val="燭光昏黃，跳動光源，陰影濃重">燭光</span>
       <span class="chip" data-val="陰天漫射光，柔和均勻，無明顯陰影">陰天漫射</span>
       <span class="chip" data-val="月光冷白，高對比，靜謐感">月光冷白</span>
+      <span class="chip" data-val="螢幕光源，藍白冷光，現代感">螢幕光</span>
+      <span class="chip" data-val="逆光剪影，強烈背光，輪廓發光">逆光</span>
+      <span class="chip" data-val="丁達爾光束穿透，光柱明顯，塵埃漂浮感">丁達爾</span>
+      <span class="chip" data-val="室內燈光，暖黃柔和，生活感">室內燈光</span>
     </div>
   </div>
   <div class="field">
     <label>整體色調</label>
     <div class="chip-group" id="chips-tone">
-      <span class="chip active" data-val="高飽和大地色系，暖棕、深褐、鮮豔民族色">大地色系</span>
-      <span class="chip" data-val="冷藍灰調，低飽和，霧感">冷藍灰</span>
-      <span class="chip" data-val="暖金橙調，飽和，豐盛感">暖金橙</span>
-      <span class="chip" data-val="低飽和莫蘭迪色，柔和，克制">莫蘭迪</span>
-      <span class="chip" data-val="高對比黑白灰，戲劇感">黑白高對比</span>
+      <span class="chip" data-val="暖色調，紅橙黃為主，溫暖熱情">暖色調</span>
+      <span class="chip" data-val="冷色調，藍紫綠為主，冷靜疏離">冷色調</span>
+      <span class="chip" data-val="中性色調，灰棕米白為主，平穩沉著">中性色調</span>
+      <span class="chip" data-val="高飽和大地色系，暖棕、深褐、鮮豔民族色">大地色系</span>
+      <span class="chip" data-val="低飽和莫蘭迪色，粉灰柔和，克制優雅">莫蘭迪</span>
+      <span class="chip" data-val="單色調（Monochromatic），同一色相深淺變化">單色調</span>
+      <span class="chip" data-val="互補色對比（Complementary），強烈視覺張力">互補色</span>
+      <span class="chip" data-val="分裂互補色（Split-Complementary），豐富但不衝突">分裂互補</span>
+      <span class="chip" data-val="類比色（Analogous），相鄰色相，和諧過渡">類比色</span>
+      <span class="chip" data-val="黑白灰高對比，無彩色，戲劇張力">黑白</span>
+      <span class="chip" data-val="賽博龐克色調，霓虹粉紫藍，高對比暗底">賽博龐克</span>
+      <span class="chip" data-val="復古色調，褪色感，低飽和懷舊濾鏡">復古</span>
     </div>
   </div>
   <div class="field">
     <label>補充畫風描述（手動輸入）</label>
-    <input type="text" id="style-extra" placeholder="例：丁達爾光束穿透揚塵，電影截圖質感">
+    <textarea id="style-extra" placeholder="例：丁達爾光束穿透揚塵，電影截圖質感" maxlength="100" rows="2" oninput="countChars(this,'style-extra-count',100)"></textarea>
+    <div class="char-count" id="style-extra-count">0 / 100</div>
   </div>
 </div>
 
+<!-- 第三層 -->
 <div class="section">
   <div class="sec-title">第三層　構圖</div>
   <div class="row2">
     <div class="field">
       <label>鏡頭距離</label>
       <select id="shot">
-        <option value="特寫鏡頭，臉部細節清晰">特寫</option>
-        <option value="中景鏡頭，上半身完整可見" selected>中景</option>
-        <option value="中長焦鏡頭，兩人全身可見">中長焦</option>
-        <option value="遠景鏡頭，強調空間與環境">遠景</option>
+        <option value="特寫鏡頭（Close-up），臉部細節清晰">特寫</option>
+        <option value="中景鏡頭（Medium shot），上半身完整可見" selected>中景</option>
+        <option value="中長焦鏡頭（Medium-long shot），兩人全身可見">中長焦</option>
+        <option value="全景鏡頭（Full shot），人物全身與部分環境">全景</option>
+        <option value="遠景鏡頭（Extreme wide shot），強調空間與環境">遠景</option>
       </select>
     </div>
     <div class="field">
       <label>視角</label>
       <select id="angle">
-        <option value="平視角度，自然真實">平視</option>
-        <option value="略微仰拍，強調高大感" selected>略微仰拍</option>
-        <option value="俯拍視角，強調空間俯瞰感">俯拍</option>
-        <option value="三分之二側視角，斜後方切入">三分之二側</option>
+        <option value="平視角度（Eye-level），自然真實">平視</option>
+        <option value="略微仰拍（Low angle），強調高大感與氣勢" selected>略微仰拍</option>
+        <option value="俯拍（High angle），由上往下，強調渺小或全局">俯拍</option>
+        <option value="鳥瞰（Bird's-eye view），垂直正上方俯視">鳥瞰（正上方）</option>
+        <option value="斜側45度（Three-quarter view），兼顧正面與側面輪廓">斜側45度</option>
+        <option value="正側面（Profile view），完整側臉，適合輪廓展示">正側面</option>
+        <option value="過肩視角（Over-the-shoulder），從某人肩後望向另一人">過肩視角</option>
+        <option value="極低仰拍（Worm's-eye view），誇張透視，強烈壓迫感">極低仰拍</option>
       </select>
     </div>
   </div>
-  <div class="row2">
+  <div class="row2" style="margin-top:.75rem">
     <div class="field">
       <label>畫面比例</label>
-      <select id="ratio">
-        <option value="尺寸：16:9 橫式" selected>16:9 橫式</option>
-        <option value="尺寸：9:16 直式">9:16 直式</option>
-        <option value="尺寸：1:1 方形">1:1 方形</option>
-        <option value="尺寸：4:3">4:3</option>
+      <select id="ratio" onchange="toggleCustomRatio(this)">
+        <option value="尺寸：16:9 橫式（寬螢幕）" selected>16:9　橫式寬螢幕</option>
+        <option value="尺寸：9:16 直式（手機螢幕）">9:16　直式手機</option>
+        <option value="尺寸：1:1 方形">1:1　方形</option>
+        <option value="尺寸：4:3 橫式（傳統橫式）">4:3　橫式傳統</option>
+        <option value="尺寸：3:4 直式（傳統直式）">3:4　直式傳統</option>
+        <option value="尺寸：2.35:1 橫式（電影寬銀幕）">2.35:1　電影寬銀幕</option>
+        <option value="custom">自行輸入…</option>
       </select>
+      <div class="ratio-custom" id="ratio-custom-wrap">
+        <input type="text" id="ratio-custom" placeholder="例：21:9、5:4、2:3…" oninput="render()">
+      </div>
     </div>
     <div class="field">
       <label>構圖補充</label>
@@ -140,15 +201,18 @@ button:active{transform:scale(.98)}
   </div>
 </div>
 
+<!-- 第四層 -->
 <div class="section">
   <div class="sec-title">第四層　人物細節</div>
   <div class="field">
     <label>角色一　服裝與動作</label>
-    <textarea id="c1action" placeholder="例：藕粉色休閒長裙，雙手半空鼓掌，黑髮幾縷在金光中飛舞"></textarea>
+    <textarea id="c1action" placeholder="例：藕粉色休閒長裙，雙手半空鼓掌，黑髮幾縷在金光中飛舞" maxlength="200" oninput="countChars(this,'c1action-count',200)"></textarea>
+    <div class="char-count" id="c1action-count">0 / 200</div>
   </div>
   <div class="field">
     <label>角色二　服裝與動作</label>
-    <textarea id="c2action" placeholder="例：深色亞麻無袖背心，獸骨頸飾，右手環腰，左手指向廣場中心"></textarea>
+    <textarea id="c2action" placeholder="例：深色亞麻無袖背心，獸骨頸飾，右手環腰，左手指向廣場中心" maxlength="200" oninput="countChars(this,'c2action-count',200)"></textarea>
+    <div class="char-count" id="c2action-count">0 / 200</div>
   </div>
   <div class="field">
     <label>兩人關係與距離</label>
@@ -156,15 +220,22 @@ button:active{transform:scale(.98)}
   </div>
 </div>
 
+<!-- 第五層 -->
 <div class="section">
   <div class="sec-title">第五層　氛圍補充 <span class="tag">可選</span></div>
   <div class="field">
-    <textarea id="vibe" placeholder="例：空氣中混合泥土腥甜、汗水與小米酒醇香，畫面充滿動態感與生命力" style="min-height:56px"></textarea>
+    <textarea id="vibe" placeholder="例：空氣中混合泥土腥甜、汗水與小米酒醇香，畫面充滿動態感與生命力" maxlength="200" style="min-height:56px" oninput="countChars(this,'vibe-count',200)"></textarea>
+    <div class="char-count" id="vibe-count">0 / 200</div>
   </div>
 </div>
 
+<!-- 產出 -->
 <div class="section">
   <div class="sec-title">產出</div>
+  <div class="output-meta">
+    <span></span>
+    <span id="output-count">0 字</span>
+  </div>
   <div class="output-box" id="output">（填寫上方欄位後自動生成）</div>
   <div class="btn-row">
     <button class="btn-copy" onclick="copyPrompt()">複製 prompt</button>
@@ -175,90 +246,106 @@ button:active{transform:scale(.98)}
 </div>
 <script>
 function g(id){return document.getElementById(id)}
-function val(id){return g(id).value.trim()}
+function val(id){return g(id)?g(id).value.trim():''}
 
-function getChips(groupId){
-  const active=[...document.querySelectorAll('#'+groupId+' .chip.active')];
-  return active.map(c=>c.dataset.val).join('，');
+function countChars(el,cid,max){
+  const n=el.value.length;
+  const c=g(cid);
+  c.textContent=n+' / '+max;
+  c.classList.toggle('over',n>=max);
+}
+
+function getChips(gid){
+  return[...document.querySelectorAll('#'+gid+' .chip.active')].map(c=>c.dataset.val).join('，');
 }
 
 document.querySelectorAll('.chip').forEach(c=>{
   c.addEventListener('click',()=>{
-    const group=c.parentElement;
-    group.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+    c.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
     c.classList.add('active');
     render();
   });
 });
 
-['c1name','c1desc','c2name','c2desc','style-extra','comp-extra','bg','c1action','c2action','relation','vibe'].forEach(id=>{
-  g(id).addEventListener('input',render);
+['c1name','c1gender','c1height','c1desc','c2name','c2gender','c2height','c2desc',
+ 'style-extra','comp-extra','bg','c1action','c2action','relation','vibe'].forEach(id=>{
+  const el=g(id);if(el)el.addEventListener('input',render);
 });
-['shot','angle','ratio'].forEach(id=>{
-  g(id).addEventListener('change',render);
-});
+['shot','angle','ratio'].forEach(id=>g(id).addEventListener('change',render));
+
+function toggleCustomRatio(sel){
+  g('ratio-custom-wrap').classList.toggle('show',sel.value==='custom');
+  render();
+}
+
+function getRatio(){
+  const sel=g('ratio');
+  if(sel.value==='custom'){
+    const c=val('ratio-custom');
+    return c?'尺寸：'+c:'';
+  }
+  return sel.value;
+}
+
+function charDesc(name,gender,height,desc){
+  const parts=[gender,height,desc].filter(Boolean);
+  return name+(parts.length?'（'+parts.join('、')+'）':'');
+}
 
 function render(){
-  const c1n=val('c1name')||'角色一';
-  const c1d=val('c1desc');
-  const c2n=val('c2name')||'角色二';
-  const c2d=val('c2desc');
-  const styleChip=getChips('chips-style');
-  const lightChip=getChips('chips-light');
-  const toneChip=getChips('chips-tone');
-  const styleExtra=val('style-extra');
-  const shot=g('shot').value;
-  const angle=g('angle').value;
-  const ratio=g('ratio').value;
-  const compExtra=val('comp-extra');
-  const bg=val('bg');
-  const c1action=val('c1action');
-  const c2action=val('c2action');
-  const relation=val('relation');
-  const vibe=val('vibe');
+  const c1n=val('c1name')||'角色一',c1g=val('c1gender'),c1h=val('c1height'),c1d=val('c1desc');
+  const c2n=val('c2name')||'角色二',c2g=val('c2gender'),c2h=val('c2height'),c2d=val('c2desc');
+  const sc=getChips('chips-style'),lc=getChips('chips-light'),tc=getChips('chips-tone'),se=val('style-extra');
+  const ratio=getRatio(),shot=g('shot').value,angle=g('angle').value;
+  const ce=val('comp-extra'),bg=val('bg'),c1a=val('c1action'),c2a=val('c2action'),rel=val('relation'),vibe=val('vibe');
 
-  let lines=[];
-  lines.push('【指令】直接生成圖片。');
-  if(c1d) lines.push('第一張附圖角色：'+c1n+'（'+c1d+'）');
-  else lines.push('第一張附圖角色：'+c1n);
-  if(c2d) lines.push('第二張附圖角色：'+c2n+'（'+c2d+'）');
-  else lines.push('第二張附圖角色：'+c2n);
-  lines.push('臉部特徵嚴格參照附圖，不得更動。');
-  lines.push('');
-  lines.push('【畫面風格】');
-  const styleAll=[styleChip,lightChip,toneChip,styleExtra].filter(Boolean).join('。');
-  if(styleAll) lines.push(styleAll+'。');
-  lines.push('');
-  lines.push('【構圖】');
-  const compAll=[ratio+'。'+shot+'，'+angle+'。',compExtra,bg?'背景：'+bg:''].filter(Boolean).join(' ');
-  lines.push(compAll);
-  lines.push('');
-  lines.push('【人物細節】');
-  if(c1action) lines.push(c1n+'：'+c1action);
-  if(c2action) lines.push(c2n+'：'+c2action);
-  if(relation) lines.push('兩人關係：'+relation);
-  if(vibe){
-    lines.push('');
-    lines.push('【氛圍補充】');
-    lines.push(vibe);
-  }
-  lines.push('');
-  lines.push('高品質，高解析，8K。');
-  g('output').textContent=lines.join('\n');
+  let L=[];
+  L.push('【指令】直接生成圖片。');
+  L.push('第一張附圖角色：'+charDesc(c1n,c1g,c1h,c1d));
+  L.push('第二張附圖角色：'+charDesc(c2n,c2g,c2h,c2d));
+  L.push('臉部特徵嚴格參照附圖，不得更動。');
+  L.push('');
+  L.push('【畫面風格】');
+  const sa=[sc,lc,tc,se].filter(Boolean).join('。');
+  if(sa)L.push(sa+'。');
+  L.push('');
+  L.push('【構圖】');
+  const cp=[ratio?ratio+'。':'',shot+'，'+angle+'。',ce,bg?'背景：'+bg:''].filter(Boolean).join(' ');
+  L.push(cp);
+  L.push('');
+  L.push('【人物細節】');
+  if(c1a)L.push(c1n+'：'+c1a);
+  if(c2a)L.push(c2n+'：'+c2a);
+  if(rel)L.push('兩人關係：'+rel);
+  if(vibe){L.push('');L.push('【氛圍補充】');L.push(vibe);}
+  L.push('');
+  L.push('高品質，高解析，8K。');
+
+  const txt=L.join('\n');
+  g('output').textContent=txt;
+  g('output-count').textContent=txt.replace(/\s/g,'').length+' 字';
 }
 
 function copyPrompt(){
-  const text=g('output').textContent;
-  navigator.clipboard.writeText(text).then(()=>{
+  navigator.clipboard.writeText(g('output').textContent).then(()=>{
     const btn=document.querySelector('.btn-copy');
+    const orig=btn.textContent;
     btn.textContent='已複製';
-    setTimeout(()=>{btn.textContent='複製 prompt'},1500);
+    setTimeout(()=>{btn.textContent=orig},1500);
   });
 }
 
 function clearAll(){
-  ['c1name','c1desc','c2name','c2desc','style-extra','comp-extra','bg','c1action','c2action','relation','vibe'].forEach(id=>{g(id).value=''});
+  ['c1name','c1gender','c1height','c1desc','c2name','c2gender','c2height','c2desc',
+   'style-extra','comp-extra','bg','c1action','c2action','relation','vibe','ratio-custom'].forEach(id=>{
+    const el=g(id);if(el)el.value='';
+  });
   document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  [['style-extra-count',100],['c1action-count',200],['c2action-count',200],['vibe-count',200]].forEach(([id,max])=>{
+    const el=g(id);if(el){el.textContent='0 / '+max;el.classList.remove('over');}
+  });
+  g('ratio').selectedIndex=0;
+  g('ratio-custom-wrap').classList.remove('show');
   render();
 }
 
