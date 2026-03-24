@@ -21,13 +21,15 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
 .chip{font-size:13px;padding:5px 12px;border-radius:20px;border:0.5px solid #b4b2a9;background:#f5f4f0;color:#5f5e5a;cursor:pointer;transition:all .15s;user-select:none}
 .chip.active{background:#e6f1fb;color:#185fa5;border-color:#378add}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .output-box{background:#f5f4f0;border:0.5px solid #d3d1c7;border-radius:8px;padding:1rem;font-size:13px;line-height:1.8;color:#1a1a18;white-space:pre-wrap;min-height:120px;font-family:ui-monospace,monospace}
-.output-box.en{color:#185fa5}
+.output-box.clean{margin-top:10px;color:#444}
 .btn-row{display:flex;gap:8px;margin-top:1rem;flex-wrap:wrap}
 button{font-size:13px;padding:7px 16px;border-radius:8px;border:0.5px solid #b4b2a9;background:transparent;color:#1a1a18;cursor:pointer;transition:all .15s;font-family:inherit}
 button:hover{background:#f5f4f0}
 button:active{transform:scale(.98)}
 .btn-copy{font-weight:500}
+.btn-sm{font-size:12px;padding:5px 10px}
 .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:6px;background:#faeeda;color:#854f0b}
 .char-count{font-size:11px;color:#888780;text-align:right;margin-top:3px}
 .char-count.over{color:#a32d2d}
@@ -35,12 +37,22 @@ button:active{transform:scale(.98)}
 .output-meta span{font-size:12px;color:#888780}
 .ratio-custom{margin-top:6px;display:none}
 .ratio-custom.show{display:block}
-.en-label{font-size:12px;color:#185fa5;font-weight:500;margin-top:12px;margin-bottom:4px}
-.char1-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.char1-grid .field-full{grid-column:1/-1}
+.char-row{display:flex;align-items:center;gap:8px;margin-bottom:.5rem}
+.char-row select{flex:1}
+.char-row button{white-space:nowrap;flex-shrink:0}
+.saved-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.75rem;min-height:0}
+.saved-chip{font-size:12px;padding:4px 10px;border-radius:20px;border:0.5px solid #b4b2a9;background:#f5f4f0;color:#5f5e5a;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s}
+.saved-chip:hover{background:#e6f1fb;color:#185fa5;border-color:#378add}
+.saved-chip .del{font-size:11px;color:#b4b2a9;margin-left:2px;line-height:1}
+.saved-chip .del:hover{color:#a32d2d}
+.divider{border:none;border-top:0.5px solid #d3d1c7;margin:.75rem 0}
+.tpl-cards{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:.5rem}
+.tpl-card{font-size:13px;padding:6px 14px;border-radius:8px;border:0.5px solid #b4b2a9;background:#f5f4f0;color:#5f5e5a;cursor:pointer;transition:all .15s;user-select:none}
+.tpl-card:hover{background:#e6f1fb;color:#185fa5;border-color:#378add}
+.tpl-card.active{background:#e6f1fb;color:#185fa5;border-color:#378add}
+.output-label{font-size:12px;color:#888780;margin-bottom:4px}
 @media(max-width:600px){
-  .row2,.char1-grid{grid-template-columns:1fr;gap:.75rem}
-  .char1-grid .field-full{grid-column:unset}
+  .row2,.cgrid{grid-template-columns:1fr;gap:.75rem}
 }
 </style>
 </head>
@@ -51,7 +63,9 @@ button:active{transform:scale(.98)}
 <!-- 第一層 -->
 <div class="section">
   <div class="sec-title">第一層　角色錨定</div>
-  <div class="char1-grid">
+
+  <!-- 角色一 -->
+  <div class="cgrid">
     <div class="field">
       <label>角色一　姓名</label>
       <input type="text" id="c1name" placeholder="例：南雁">
@@ -69,7 +83,17 @@ button:active{transform:scale(.98)}
       <input type="text" id="c1desc" placeholder="例：黑色長髮、灰色眼睛、低髮髻">
     </div>
   </div>
-  <div class="char1-grid" style="margin-top:.75rem">
+  <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
+    <select id="load1-sel" style="flex:1;font-size:13px" onchange="loadCharFromSelect(this,'c1')">
+      <option value="">— 載入已儲存角色 —</option>
+    </select>
+    <button class="btn-sm" onclick="saveChar('c1')">儲存</button>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 角色二 -->
+  <div class="cgrid">
     <div class="field">
       <label>角色二　姓名</label>
       <input type="text" id="c2name" placeholder="例：辛癸">
@@ -87,13 +111,33 @@ button:active{transform:scale(.98)}
       <input type="text" id="c2desc" placeholder="例：黑棕色長髮、辮子、琥珀色眼睛、暖棕色皮膚">
     </div>
   </div>
+  <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
+    <select id="load2-sel" style="flex:1;font-size:13px" onchange="loadCharFromSelect(this,'c2')">
+      <option value="">— 載入已儲存角色 —</option>
+    </select>
+    <button class="btn-sm" onclick="saveChar('c2')">儲存</button>
+  </div>
 </div>
 
 <!-- 第二層 -->
 <div class="section">
   <div class="sec-title">第二層　畫面風格</div>
+
+  <!-- 氛圍模板 -->
   <div class="field">
-    <label>畫風技法</label>
+    <label>氛圍模板 <span class="tag">快速套用</span></label>
+    <div class="tpl-cards" id="tpl-cards">
+      <div class="tpl-card" data-tpl="conflict">衝突張力</div>
+      <div class="tpl-card" data-tpl="tender">溫柔靠近</div>
+      <div class="tpl-card" data-tpl="solitude">獨處靜謐</div>
+      <div class="tpl-card" data-tpl="festive">節慶熱鬧</div>
+      <div class="tpl-card" data-tpl="epic">史詩壯闊</div>
+      <div class="tpl-card" data-tpl="night">深夜密謀</div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>畫風技法 <span style="font-size:11px;color:#888780">（可多選）</span></label>
     <div class="chip-group" id="chips-style">
       <span class="chip" data-val="半寫實動漫風格，參照附圖畫風">半寫實動漫</span>
       <span class="chip" data-val="水墨畫風格，線條寫意，墨色暈染">水墨</span>
@@ -107,7 +151,7 @@ button:active{transform:scale(.98)}
     </div>
   </div>
   <div class="field">
-    <label>光線性質</label>
+    <label>光線性質 <span style="font-size:11px;color:#888780">（可多選）</span></label>
     <div class="chip-group" id="chips-light">
       <span class="chip" data-val="無光線設定，平塗無陰影">無</span>
       <span class="chip" data-val="正午烈日直射，強光高反差">正午烈日</span>
@@ -123,7 +167,7 @@ button:active{transform:scale(.98)}
     </div>
   </div>
   <div class="field">
-    <label>整體色調</label>
+    <label>整體色調 <span style="font-size:11px;color:#888780">（可多選）</span></label>
     <div class="chip-group" id="chips-tone">
       <span class="chip" data-val="暖色調，紅橙黃為主，溫暖熱情">暖色調</span>
       <span class="chip" data-val="冷色調，藍紫綠為主，冷靜疏離">冷色調</span>
@@ -140,7 +184,7 @@ button:active{transform:scale(.98)}
     </div>
   </div>
   <div class="field">
-    <label>補充畫風描述（手動輸入）</label>
+    <label>補充畫風描述</label>
     <textarea id="style-extra" placeholder="例：丁達爾光束穿透揚塵，電影截圖質感" maxlength="100" rows="2" oninput="countChars(this,'style-extra-count',100)"></textarea>
     <div class="char-count" id="style-extra-count">0 / 100</div>
   </div>
@@ -195,7 +239,7 @@ button:active{transform:scale(.98)}
       <input type="text" id="comp-extra" placeholder="例：焦點落在兩人手部與表情">
     </div>
   </div>
-  <div class="field">
+  <div class="field" style="margin-top:.75rem">
     <label>背景描述</label>
     <input type="text" id="bg" placeholder="例：部落廣場、觀眾人群、遠山與藍天">
   </div>
@@ -233,12 +277,19 @@ button:active{transform:scale(.98)}
 <div class="section">
   <div class="sec-title">產出</div>
   <div class="output-meta">
-    <span></span>
+    <span class="output-label">完整格式</span>
     <span id="output-count">0 字</span>
   </div>
   <div class="output-box" id="output">（填寫上方欄位後自動生成）</div>
+
+  <div style="margin-top:12px">
+    <div class="output-label">Markdown 格式（給 Gemini 用）</div>
+    <div class="output-box clean" id="output-clean">—</div>
+  </div>
+
   <div class="btn-row">
-    <button class="btn-copy" onclick="copyPrompt()">複製 prompt</button>
+    <button class="btn-copy" onclick="copyText('output')">複製完整</button>
+    <button onclick="copyText('output-clean')">複製 Markdown</button>
     <button onclick="clearAll()">清除全部</button>
   </div>
 </div>
@@ -248,25 +299,51 @@ button:active{transform:scale(.98)}
 function g(id){return document.getElementById(id)}
 function val(id){return g(id)?g(id).value.trim():''}
 
+// ── 字數計算 ──
 function countChars(el,cid,max){
-  const n=el.value.length;
-  const c=g(cid);
+  const n=el.value.length,c=g(cid);
   c.textContent=n+' / '+max;
   c.classList.toggle('over',n>=max);
 }
 
+// ── 晶片多選 ──
+document.querySelectorAll('.chip').forEach(c=>{
+  c.addEventListener('click',()=>{
+    c.classList.toggle('active');
+    render();
+  });
+});
 function getChips(gid){
   return[...document.querySelectorAll('#'+gid+' .chip.active')].map(c=>c.dataset.val).join('，');
 }
 
-document.querySelectorAll('.chip').forEach(c=>{
-  c.addEventListener('click',()=>{
-    c.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
-    c.classList.add('active');
+// ── 氛圍模板 ──
+const TEMPLATES={
+  conflict:{light:'逆光剪影，強烈背光，輪廓發光',tone:'互補色對比（Complementary），強烈視覺張力',vibe:'空氣緊繃，對峙瞬間，呼吸凝結，肌肉蓄力待發'},
+  tender:{light:'陰天漫射光，柔和均勻，無明顯陰影',tone:'低飽和莫蘭迪色，粉灰柔和，克制優雅',vibe:'細微的溫度傳遞，靠近的距離，呼吸輕而緩'},
+  solitude:{light:'月光冷白，高對比，靜謐感',tone:'冷色調，藍紫綠為主，冷靜疏離',vibe:'夜深人靜，只有風聲，一人獨處的空曠與沉澱'},
+  festive:{light:'正午烈日直射，強光高反差',tone:'高飽和大地色系，暖棕、深褐、鮮豔民族色',vibe:'人聲鼎沸，鑼鼓喧天，塵土飛揚，沸騰的生命力'},
+  epic:{light:'黃昏側光，橙金暖調，長影',tone:'暖色調，紅橙黃為主，溫暖熱情',vibe:'山河壯闊，風吹衣袂，站在命運的轉折點'},
+  night:{light:'燭光昏黃，跳動光源，陰影濃重',tone:'中性色調，灰棕米白為主，平穩沉著',vibe:'壓低的聲音，秘密在黑暗中流動，燭火將熄'}
+};
+document.querySelectorAll('.tpl-card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    const isActive=card.classList.contains('active');
+    document.querySelectorAll('.tpl-card').forEach(c=>c.classList.remove('active'));
+    if(isActive){render();return;}
+    card.classList.add('active');
+    const tpl=TEMPLATES[card.dataset.tpl];
+    // 清掉現有光線/色調晶片再套用
+    document.querySelectorAll('#chips-light .chip, #chips-tone .chip').forEach(c=>c.classList.remove('active'));
+    document.querySelectorAll('#chips-light .chip').forEach(c=>{if(c.dataset.val===tpl.light)c.classList.add('active');});
+    document.querySelectorAll('#chips-tone .chip').forEach(c=>{if(c.dataset.val===tpl.tone)c.classList.add('active');});
+    g('vibe').value=tpl.vibe;
+    countChars(g('vibe'),'vibe-count',200);
     render();
   });
 });
 
+// ── 輸入監聽 ──
 ['c1name','c1gender','c1height','c1desc','c2name','c2gender','c2height','c2desc',
  'style-extra','comp-extra','bg','c1action','c2action','relation','vibe'].forEach(id=>{
   const el=g(id);if(el)el.addEventListener('input',render);
@@ -277,21 +354,17 @@ function toggleCustomRatio(sel){
   g('ratio-custom-wrap').classList.toggle('show',sel.value==='custom');
   render();
 }
-
 function getRatio(){
   const sel=g('ratio');
-  if(sel.value==='custom'){
-    const c=val('ratio-custom');
-    return c?'尺寸：'+c:'';
-  }
+  if(sel.value==='custom'){const c=val('ratio-custom');return c?'尺寸：'+c:'';}
   return sel.value;
 }
-
 function charDesc(name,gender,height,desc){
   const parts=[gender,height,desc].filter(Boolean);
   return name+(parts.length?'（'+parts.join('、')+'）':'');
 }
 
+// ── 渲染 ──
 function render(){
   const c1n=val('c1name')||'角色一',c1g=val('c1gender'),c1h=val('c1height'),c1d=val('c1desc');
   const c2n=val('c2name')||'角色二',c2g=val('c2gender'),c2h=val('c2height'),c2d=val('c2desc');
@@ -299,6 +372,7 @@ function render(){
   const ratio=getRatio(),shot=g('shot').value,angle=g('angle').value;
   const ce=val('comp-extra'),bg=val('bg'),c1a=val('c1action'),c2a=val('c2action'),rel=val('relation'),vibe=val('vibe');
 
+  // 完整格式
   let L=[];
   L.push('【指令】直接生成圖片。');
   L.push('第一張附圖角色：'+charDesc(c1n,c1g,c1h,c1d));
@@ -320,27 +394,122 @@ function render(){
   if(vibe){L.push('');L.push('【氛圍補充】');L.push(vibe);}
   L.push('');
   L.push('高品質，高解析，8K。');
-
   const txt=L.join('\n');
   g('output').textContent=txt;
   g('output-count').textContent=txt.replace(/\s/g,'').length+' 字';
+
+  // Markdown 格式
+  function stripNote(s){return s.replace(/（[^）]*）/g,'').replace(/，.*/,'').trim();}
+  const mdLines=[];
+  mdLines.push('直接生成圖片。');
+  mdLines.push('');
+  mdLines.push('**角色**');
+  mdLines.push('- 附圖一：'+charDesc(c1n,c1g,c1h,c1d));
+  mdLines.push('- 附圖二：'+charDesc(c2n,c2g,c2h,c2d));
+  mdLines.push('- 臉部嚴格參照附圖，不得更動。');
+  const styleBlock=[sc,lc,tc,se].filter(Boolean).join('，');
+  if(styleBlock){mdLines.push('');mdLines.push('**畫面風格**');mdLines.push(styleBlock+'。');}
+  const ratioClean=getRatio().replace('尺寸：','').replace(/（[^）]*）/g,'').trim();
+  const shotClean=stripNote(g('shot').value);
+  const angleClean=stripNote(g('angle').value);
+  const compParts=[ratioClean,shotClean,angleClean,ce].filter(Boolean).join('，');
+  if(compParts||bg){
+    mdLines.push('');mdLines.push('**構圖**');
+    if(compParts)mdLines.push(compParts+'。');
+    if(bg)mdLines.push('背景：'+bg+'。');
+  }
+  if(c1a||c2a||rel){
+    mdLines.push('');mdLines.push('**人物細節**');
+    if(c1a)mdLines.push('- '+c1n+'：'+c1a);
+    if(c2a)mdLines.push('- '+c2n+'：'+c2a);
+    if(rel)mdLines.push('- '+rel);
+  }
+  if(vibe){mdLines.push('');mdLines.push('**氛圍**');mdLines.push(vibe+'。');}
+  mdLines.push('');
+  mdLines.push('高品質，高解析，8K。');
+  g('output-clean').textContent=mdLines.join('\n');
 }
 
-function copyPrompt(){
-  navigator.clipboard.writeText(g('output').textContent).then(()=>{
-    const btn=document.querySelector('.btn-copy');
+// ── 複製 ──
+function copyText(id){
+  navigator.clipboard.writeText(g(id).textContent).then(()=>{
+    const btns=document.querySelectorAll('.btn-row button');
+    const map={'output':0,'output-clean':1};
+    const btn=btns[map[id]];
+    if(!btn)return;
     const orig=btn.textContent;
     btn.textContent='已複製';
     setTimeout(()=>{btn.textContent=orig},1500);
   });
 }
 
+// ── 儲存角色 (localStorage) ──
+function refreshSelects(){
+  const list=JSON.parse(localStorage.getItem('gpb_chars')||'[]');
+  ['load1-sel','load2-sel'].forEach(sid=>{
+    const sel=g(sid);
+    const cur=sel.value;
+    sel.innerHTML='<option value="">— 載入已儲存角色 —</option>';
+    list.forEach((ch,i)=>{
+      const opt=document.createElement('option');
+      opt.value=i;
+      opt.textContent=ch.name+(ch.gender?'　'+ch.gender:'')+(ch.height?'　'+ch.height:'');
+      sel.appendChild(opt);
+    });
+    // 加刪除佔位（用 optgroup 分隔）
+    if(list.length){
+      const grp=document.createElement('optgroup');
+      grp.label='─────';
+      list.forEach((ch,i)=>{
+        const opt=document.createElement('option');
+        opt.value='del:'+i;
+        opt.textContent='✕ 刪除　'+ch.name;
+        grp.appendChild(opt);
+      });
+      sel.appendChild(grp);
+    }
+    sel.value=cur||'';
+  });
+}
+function loadCharFromSelect(sel,prefix){
+  const v=sel.value;
+  if(!v)return;
+  if(v.startsWith('del:')){
+    const i=parseInt(v.split(':')[1]);
+    const list=JSON.parse(localStorage.getItem('gpb_chars')||'[]');
+    list.splice(i,1);
+    localStorage.setItem('gpb_chars',JSON.stringify(list));
+    refreshSelects();
+    return;
+  }
+  const list=JSON.parse(localStorage.getItem('gpb_chars')||'[]');
+  const ch=list[parseInt(v)];if(!ch)return;
+  g(prefix+'name').value=ch.name;
+  g(prefix+'gender').value=ch.gender||'';
+  g(prefix+'height').value=ch.height||'';
+  g(prefix+'desc').value=ch.desc||'';
+  sel.value='';
+  render();
+}
+function saveChar(prefix){
+  const name=val(prefix+'name');
+  if(!name){alert('請先填入角色姓名');return;}
+  const ch={name,gender:val(prefix+'gender'),height:val(prefix+'height'),desc:val(prefix+'desc')};
+  const list=JSON.parse(localStorage.getItem('gpb_chars')||'[]');
+  const exist=list.findIndex(c=>c.name===name);
+  if(exist>=0)list[exist]=ch; else list.push(ch);
+  localStorage.setItem('gpb_chars',JSON.stringify(list));
+  refreshSelects();
+}
+
+// ── 清除全部 ──
 function clearAll(){
   ['c1name','c1gender','c1height','c1desc','c2name','c2gender','c2height','c2desc',
    'style-extra','comp-extra','bg','c1action','c2action','relation','vibe','ratio-custom'].forEach(id=>{
     const el=g(id);if(el)el.value='';
   });
   document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.tpl-card').forEach(c=>c.classList.remove('active'));
   [['style-extra-count',100],['c1action-count',200],['c2action-count',200],['vibe-count',200]].forEach(([id,max])=>{
     const el=g(id);if(el){el.textContent='0 / '+max;el.classList.remove('over');}
   });
@@ -349,6 +518,7 @@ function clearAll(){
   render();
 }
 
+refreshSelects();
 render();
 </script>
 </body>
